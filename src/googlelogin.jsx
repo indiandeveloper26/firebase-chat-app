@@ -73,6 +73,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Image,
+  Button,
 } from 'react-native';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import {
@@ -146,6 +147,10 @@ const GoogleSignInScreen = () => {
           <Text style={styles.googleText}>Sign In with Google</Text>
         </TouchableOpacity>
       )}
+
+
+
+      <Button onPress={()=>navagation.navigate("docpicker")} title='device '></Button>
     </View>
   );
 };
