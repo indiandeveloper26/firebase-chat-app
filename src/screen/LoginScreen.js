@@ -39,44 +39,88 @@ export default function LoginScreen({ navigation }) {
     return valid;
   };
 
-  const handleLogin = async () => {
-    if (!validate()) return;
+  // const handleLogin = async () => {
+  //   if (!validate()) return;
 
-    try {
-      setLoading(true);
+  //   try {
+  //     setLoading(true);
 
-      // ✅ Firestore se user fetch karo by phone number
-      const querySnapshot = await firestore()
-        .collection('Users')
-        .where('phone', '==', phone)
-        .get();
+  //     // ✅ Firestore se user fetch karo by phone number
+  //     const querySnapshot = await firestore()
+  //       .collection('Users')
 
-      if (querySnapshot.empty) {
-        setLoading(false);
-        Alert.alert('Login Failed', 'User not found.');
-        return;
-      }
+  //       .get();
 
-      const userDoc = querySnapshot.docs[0];
-      const userData = userDoc.data();
+  //     if (querySnapshot.empty) {
+  //       setLoading(false);
+  //       Alert.alert('Login Failed', 'User not found.');
+  //       return;
+  //     }
 
-      if (userData.password !== password) {
-        setLoading(false);
-        Alert.alert('Login Failed', 'Incorrect password.');
-        return;
-      }
+  //     const userDoc = querySnapshot.docs[0];
+  //     const userData = userDoc.data();
 
+  //     if (userData.password !== password) {
+  //       setLoading(false);
+  //       Alert.alert('Login Failed', 'Incorrect password.');
+  //       return;
+  //     }
+
+  //     setLoading(false);
+  //     Alert.alert('Login Success', `Welcome ${userData.name}`);
+  //        await AsyncStorage.setItem('userName', name);
+  //   await AsyncStorage.setItem('userPhone', phone);
+  //   await AsyncStorage.setItem('userId', uid);
+  //     navigation.replace('chatlist'); // Replace with your home/chat screen
+
+  //   } catch (error) {
+  //     setLoading(false);
+  //     Alert.alert('Login Error', error.message || 'Something went wrong.');
+  //   }
+  // };
+
+
+const handleLogin = async () => {
+  if (!validate()) return;
+
+  try {
+    setLoading(true);
+
+    // ✅ Firestore se user fetch karo by phone number
+    const querySnapshot = await firestore()
+      .collection('Users')
+      .where('phone', '==', phone)
+      .get();
+
+    if (querySnapshot.empty) {
       setLoading(false);
-      Alert.alert('Login Success', `Welcome ${userData.name}`);
-      navigation.replace('chatlist'); // Replace with your home/chat screen
-   await AsyncStorage.setItem('userName', name);
-    await AsyncStorage.setItem('userPhone', phone);
-    await AsyncStorage.setItem('userId', uid);
-    } catch (error) {
-      setLoading(false);
-      Alert.alert('Login Error', error.message || 'Something went wrong.');
+      Alert.alert('Login Failed', 'User not found.');
+      return;
     }
-  };
+
+    const userDoc = querySnapshot.docs[0];
+    const userData = userDoc.data();
+
+    if (userData.password !== password) {
+      setLoading(false);
+      Alert.alert('Login Failed', 'Incorrect password.');
+      return;
+    }
+
+    // ✅ Store user info in AsyncStorage
+    await AsyncStorage.setItem('userName', userData.name || '');
+    await AsyncStorage.setItem('userPhone', userData.phone || '');
+    await AsyncStorage.setItem('userId', userDoc.id); // Firestore doc ID as user ID
+
+    setLoading(false);
+    Alert.alert('Login Success', `Welcome ${userData.name}`);
+    navigation.replace('chatlist'); // Go to chat list
+
+  } catch (error) {
+    setLoading(false);
+    Alert.alert('Login Error', error.message || 'Something went wrong.');
+  }
+};
 
   return (
     <View style={styles.container}>

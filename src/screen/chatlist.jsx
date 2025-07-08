@@ -135,15 +135,20 @@ export default function chatList({ navigation }) {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentUserId, setCurrentUserId] = useState(null);
+  const [userid, setuserid] = useState()
 
   useEffect(() => {
     const loadCurrentUser = async () => {
-      const id = await AsyncStorage.getItem('userId');
+      const id = await AsyncStorage.getItem('userPhone');
+      // Alert.alert("id",id)
+      setuserid(id)
       setCurrentUserId(id);
     };
 
     loadCurrentUser();
   }, []);
+
+  
 
   useEffect(() => {
     if (!currentUserId) return;
@@ -171,8 +176,8 @@ export default function chatList({ navigation }) {
   }, [currentUserId]);
 
   const handlePress = (item) => {
-    navigation.navigate('chatroom', { user: item });
-    // Alert.alert(JSON.stringify(item))
+    navigation.navigate('chatroom', { userphone: userid,resiverphone:item.phone });
+    // Alert.alert(JSON.stringify(item.phone))
   };
 
   const renderItem = ({ item }) => (
@@ -187,6 +192,7 @@ export default function chatList({ navigation }) {
           {item.lastMessage}
         </Text>
       </View>
+
     </TouchableOpacity>
   );
 
@@ -200,6 +206,9 @@ export default function chatList({ navigation }) {
 
   return (
     <View style={styles.container}>
+            <Text> hii
+        {JSON.stringify(userid)}
+      </Text>
       <FlatList
         data={users}
         keyExtractor={(item) => item.id}

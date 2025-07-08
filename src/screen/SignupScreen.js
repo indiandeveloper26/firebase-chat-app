@@ -61,34 +61,39 @@ export default function SignupScreen({ navigation }) {
     return valid;
   };
 
-  const handleSignup = async () => {
-    if (!validate()) return;
+const handleSignup = async () => {
+  if (!validate()) return;
 
-    const uid = generateUniqueId();
+  const uid = generateUniqueId();
 
-    try {
-      setLoading(true);
+  try {
+    setLoading(true);
 
-      // ✅ Save user in Firestore
-      await firestore().collection('Users').doc(uid).set({
-        uid,
-        name,
-        phone,
-        password,
-        createdAt: firestore.FieldValue.serverTimestamp(),
-      });
+    // ✅ Save user to Firestore
+    await firestore().collection('Users').doc(uid).set({
+      uid,
+      name,
+      phone,
+      password,
+      createdAt: firestore.FieldValue.serverTimestamp(),
+    });
 
-      setLoading(false);
-      Alert.alert('Success', 'Account created successfully!');
-      navigation.navigate('chatlist') // update this as needed
-   await AsyncStorage.setItem('userName', name);
+    // ✅ Save to local storage FIRST
+    await AsyncStorage.setItem('userName', name);
     await AsyncStorage.setItem('userPhone', phone);
     await AsyncStorage.setItem('userId', uid);
-    } catch (error) {
-      setLoading(false);
-      Alert.alert('Signup Error', error.message || 'Something went wrong.');
-    }
-  };
+
+    setLoading(false);
+    Alert.alert('Success', 'Account created successfully!');
+
+    // ✅ THEN navigate
+    navigation.replace('chatlist'); // replace is safer than navigate in login/signup flows
+
+  } catch (error) {
+    setLoading(false);
+    Alert.alert('Signup Error', error.message || 'Something went wrong.');
+  }
+};
 
   return (
     <View style={styles.container}>
@@ -158,3 +163,7 @@ const styles = StyleSheet.create({
     color: '#333',
   },
 });
+
+
+
+
